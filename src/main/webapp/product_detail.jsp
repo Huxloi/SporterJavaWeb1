@@ -126,6 +126,17 @@
                 <fmt:formatNumber value="${product.price}" type="number" maxFractionDigits="0"/> VNĐ
             </p>
 
+            <div class="product-avg-rating mb-3 fs-5 border-top border-bottom py-2">
+                <%-- <span class="fw-bold text-warning">
+                    <c:forEach begin="1" end="${intAvgRating}"><i class="fa-solid fa-star"></i></c:forEach>
+                    <c:forEach begin="${intAvgRating + 1}" end="5"><i class="fa-regular fa-star"></i></c:forEach>
+                </span> --%>
+                <span class="text-dark fw-bold ms-2">
+                    <fmt:formatNumber value="${avgRating}" minFractionDigits="1" maxFractionDigits="1"/> / 5 <i class="text-warning fa-solid fa-star"></i>
+                </span>
+                <span class="text-secondary small ms-1">(${totalReviews} lượt đánh giá)</span>
+            </div>
+
             <p class="mb-4 text-secondary">
                 Trạng thái:
                 <c:choose>
@@ -188,18 +199,22 @@
                 </div>
             </c:if>
 
-
-
-
             <div class="comment-list">
                 <c:choose>
                     <c:when test="${not empty comments}">
                         <c:forEach items="${comments}" var="c">
                             <div class="p-4 mb-3 rounded comment-box shadow-sm border">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
                                     <span class="fw-bold text-dark"><i class="fa-solid fa-circle-user me-2 text-secondary fs-5"></i>${c.username}</span>
                                     <span class="small text-secondary"><i class="fa-regular fa-clock me-1"></i><fmt:formatDate value="${c.createdAt}" pattern="dd/MM/yyyy HH:mm"/></span>
                                 </div>
+
+                                <div class="mb-2 text-warning small ms-4">
+                                    <c:forEach begin="1" end="${c.rating}"><i class="fa-solid fa-star"></i></c:forEach>
+                                    <c:forEach begin="${c.rating + 1}" end="5"><i class="fa-regular fa-star"></i></c:forEach>
+                                    <span class="text-secondary ms-3 border-start ps-3">Phân loại: Size <b>${c.size}</b> | Màu <b>${c.color}</b></span>
+                                </div>
+
                                 <p class="mb-0 text-dark ms-4" style="white-space: pre-wrap;">${c.commentText}</p>
                             </div>
                         </c:forEach>
@@ -209,6 +224,7 @@
                     </c:otherwise>
                 </c:choose>
             </div>
+
         </div>
     </div>
 </div>

@@ -28,11 +28,11 @@ public class RegisterServlet extends HttpServlet {
 
         if (success) {
             // Đăng ký thành công, đính kèm thông báo và chuyển hướng về trang Đăng nhập
-            request.setAttribute("success", "✅ Đăng ký tài khoản thành công! Vui lòng đăng nhập.");
+            request.setAttribute("success", "Đăng ký tài khoản thành công! Vui lòng đăng nhập.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
             // Thất bại (Trùng username hoặc email)
-            request.setAttribute("error", "❌ Tên đăng nhập hoặc Email đã được sử dụng!");
+            request.setAttribute("error", "Tên đăng nhập hoặc Email đã được sử dụng!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

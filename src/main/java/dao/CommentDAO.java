@@ -111,4 +111,21 @@ public class CommentDAO {
         }
         return false;
     }
-} 
+    // Tính trung bình số sao của 1 sản phẩm
+    public double getAverageRatingByProductId(int productId) {
+        String sql = "SELECT AVG(rating) FROM comments WHERE product_id = ?";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1); // Trả về điểm trung bình (vd: 4.5)
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+}

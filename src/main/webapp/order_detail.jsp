@@ -163,15 +163,38 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary">Chất lượng sản phẩm:</label>
-                                    <select name="products[0].rating" class="form-select" required>
-                                        <option value="5" selected>⭐⭐⭐⭐⭐</option>
-                                        <option value="4">⭐⭐⭐⭐</option>
-                                        <option value="3">⭐⭐⭐</option>
-                                        <option value="2">⭐⭐</option>
-                                        <option value="1">⭐ </option>
-                                    </select>
+                                    <label class="form-label fw-bold text-secondary d-block">Chất lượng sản phẩm:</label>
+                                    <div class="star-rating fs-3 text-warning" style="cursor: pointer;">
+                                        <i class="fa-solid fa-star" data-value="1"></i>
+                                        <i class="fa-solid fa-star" data-value="2"></i>
+                                        <i class="fa-solid fa-star" data-value="3"></i>
+                                        <i class="fa-solid fa-star" data-value="4"></i>
+                                        <i class="fa-solid fa-star" data-value="5"></i>
+                                    </div>
+                                    <input type="hidden" name="products[0].rating" id="ratingValue" value="5" required>
                                 </div>
+
+                                <script>
+                                    document.querySelectorAll('.star-rating i').forEach(star => {
+                                        star.addEventListener('click', function() {
+                                            const value = this.getAttribute('data-value');
+                                            document.getElementById('ratingValue').value = value;
+
+                                            // Đổi màu các sao
+                                            this.parentNode.querySelectorAll('i').forEach((s, idx) => {
+                                                if (idx < value) {
+                                                    s.classList.remove('fa-regular');
+                                                    s.classList.add('fa-solid');
+                                                    s.style.color = '#ffc107';
+                                                } else {
+                                                    s.classList.remove('fa-solid');
+                                                    s.classList.add('fa-regular');
+                                                    s.style.color = '#ccc';
+                                                }
+                                            });
+                                        });
+                                    });
+                                </script>
 
                                 <div class="mb-0">
                                     <label class="form-label fw-bold text-secondary">Nhận xét của bạn:</label>
