@@ -1,0 +1,35 @@
+package controller;
+
+import dao.CommentDAO;
+import dao.ProductDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+
+@WebServlet("/product_detail")
+public class ProductDetailServlet extends HttpServlet {
+    private CommentDAO commentDAO = new CommentDAO();
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int productId = Integer.parseInt(request.getParameter("id"));
+        request.setAttribute("comments", commentDAO.getCommentsByProductId(productId));
+        request.setAttribute("product", new ProductDAO().getProductById(productId));
+        request.getRequestDispatcher("/product_detail.jsp").forward(request, response);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Object acc = session.getAttribute("acc");
+        if (acc == null) { response.sendRedirect("login"); return; }
+
+        try {
+            int productId = Integer.parseInt(request.getParameter("product_id"));
+            String commentText = request.getParameter("comment_text");
+            int userId = (int) acc.getClass().getMethod("getId").invoke(acc);
+
+            commentDAO.addComment(userId, productId, commentText);
+            response.sendRedirect("product_detail?id=" + productId);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+}
