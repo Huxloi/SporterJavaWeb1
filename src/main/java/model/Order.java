@@ -13,7 +13,7 @@ public class Order {
     private String phone;
     private List<OrderItem> items; // Chứa danh sách sản phẩm thuộc đơn hàng này
 
-    public Order() {}
+    public Order(int id, int userId, String customerName, Timestamp orderDate, double totalAmount, String status, String address, String phone) {}
 
     public Order(int id, int userId, Timestamp orderDate, double totalAmount, String status, String address, String phone) {
         this.id = id;

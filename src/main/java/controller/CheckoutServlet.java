@@ -1,7 +1,9 @@
 package controller;
 
 import dao.OrderDAO;
+import dao.ProductDAO;
 import model.Cart;
+import model.Item;
 import model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -50,9 +52,15 @@ public class CheckoutServlet extends HttpServlet {
             boolean isSuccess = dao.createOrder(acc, cart, address, phone, paymentMethod);
 
             if (isSuccess) {
+                // TRỪ TỒN KHO SẢN PHẨM SAU KHI ĐẶT HÀNG THÀNH CÔNG
+                ProductDAO productDAO = new ProductDAO();
+                for (Item item : cart.getItems()) {
+                    productDAO.reduceStock(item.getProduct().getId(), item.getQuantity());
+                }
+
                 // Xóa giỏ hàng sau khi đặt thành công
                 session.removeAttribute("cart");
-                // Chuyển hướng trang (có thể trỏ về my_orders sau này)
+                // Chuyển hướng trang thông báo thành công
                 response.sendRedirect("index?message=OrderSuccess");
             } else {
                 request.setAttribute("error", "Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!");

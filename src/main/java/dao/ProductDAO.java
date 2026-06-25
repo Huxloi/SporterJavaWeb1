@@ -162,6 +162,19 @@ public class ProductDAO {
         return list;
     }
 
+    // Trừ tồn kho sản phẩm sau khi đặt hàng thành công
+    public void reduceStock(int productId, int quantityToReduce) {
+        String sql = "UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quantityToReduce);
+            ps.setInt(2, productId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     // ==========================================
