@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
-    .navbar { border-bottom: 1px solid #eaeaea; padding: 15px 0; background-color: #fff;}
+    .navbar { border-bottom: 1px solid #eaeaea; padding: 15px 0; background-color: #fff; }
     .logo-icon { color: #00d2ff; font-size: 1.8rem; margin-right: 5px; }
     .logo-text { color: #0d47a1; font-weight: 900; font-size: 1.8rem; letter-spacing: -1px; }
 
@@ -18,7 +18,7 @@
     .checkout-card { background-color: #fff; border-radius: 8px; padding: 30px; border: 1px solid #eef0f2; }
     .summary-card { background-color: #fff; border-radius: 8px; padding: 25px; border: 1px solid #eef0f2; }
     .card-inner-title { font-size: 1.2rem; font-weight: 700; color: #212529; margin-bottom: 25px; }
-    .btn-complete-order { background-color: #dc3545; color: white; font-weight: 700; border: none; width: 100%; padding: 14px; border-radius: 6px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px;}
+    .btn-complete-order { background-color: #dc3545; color: white; font-weight: 700; border: none; width: 100%; padding: 14px; border-radius: 6px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-complete-order:hover { background-color: #bd2130; }
   </style>
 </head>
@@ -39,7 +39,7 @@
     <a href="cart" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Quay lại Giỏ hàng</a>
   </div>
 
-  <form action="checkout" method="post" class="m-0">
+  <form action="checkout" method="post" class="m-0" id="checkoutForm" onsubmit="return validateForm()">
     <div class="row g-4">
       <div class="col-lg-7">
         <div class="checkout-card shadow-sm">
@@ -51,13 +51,29 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold text-secondary">Địa chỉ chi tiết (*)</label>
-            <input type="text" name="address" class="form-control py-2" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" required>
+            <label class="form-label small fw-bold text-secondary">Địa chỉ giao hàng chi tiết (*)</label>
+
+            <select class="form-select mb-2 py-2" id="province" required>
+              <option value="" selected>-- Chọn Tỉnh / Thành phố --</option>
+            </select>
+
+            <select class="form-select mb-2 py-2" id="district" required disabled>
+              <option value="" selected>-- Chọn Quận / Huyện --</option>
+            </select>
+
+            <select class="form-select mb-2 py-2" id="ward" required disabled>
+              <option value="" selected>-- Chọn Xã / Phường / Thị trấn --</option>
+            </select>
+
+            <input type="text" id="specificAddress" class="form-control py-2 mt-2" placeholder="Số nhà, tên đường, ngõ, ngách cụ thể...">
+
+            <input type="hidden" name="address" id="fullAddress">
           </div>
 
           <div class="mb-4">
             <label class="form-label small fw-bold text-secondary">Số điện thoại (*)</label>
-            <input type="tel" name="phone" class="form-control py-2" placeholder="Nhập số điện thoại nhận hàng..." required>
+            <input type="tel" name="phone" id="phone" class="form-control py-2" placeholder="Nhập số điện thoại nhận hàng..." required>
+            <small class="text-danger small fw-bold mt-1" id="phoneError" style="display: none;"></small>
           </div>
 
           <div class="card-inner-title pt-3 border-top"><i class="fa-solid fa-wallet text-primary me-2"></i> 2. Phương thức Thanh toán</div>
@@ -104,5 +120,89 @@
     </div>
   </form>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    var citis = document.getElementById("province");
+    var districts = document.getElementById("district");
+    var wards = document.getElementById("ward");
+
+    var Parameter = {
+      url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+      method: "GET",
+      responseType: "application/json",
+    };
+
+    axios(Parameter).then(function (result) {
+      renderCity(result.data);
+    });
+
+    function renderCity(data) {
+      for (const x of data) {
+        citis.options[citis.options.length] = new Option(x.Name, x.Id);
+      }
+      citis.onchange = function () {
+        district.length = 1;
+        ward.length = 1;
+        if(this.value != ""){
+          const result = data.filter(n => n.Id === this.value);
+          for (const k of result[0].Districts) {
+            districts.options[districts.options.length] = new Option(k.Name, k.Id);
+          }
+        }
+      };
+      districts.onchange = function () {
+        ward.length = 1;
+        const dataCity = data.filter(n => n.Id === citis.value);
+        if(this.value != ""){
+          const dataDistrict = dataCity[0].Districts.filter(n => n.Id === this.value);
+          for (const w of dataDistrict[0].Wards) {
+            wards.options[wards.options.length] = new Option(w.Name, w.Id);
+          }
+        }
+      };
+
+      citis.addEventListener("change", function() {
+          districts.removeAttribute("disabled");
+      });
+      districts.addEventListener("change", function() {
+          wards.removeAttribute("disabled");
+      });
+    }
+
+    // Kiểm tra ràng buộc điều kiện SĐT và gộp chuỗi Địa chỉ
+    function validateForm() {
+        var phone = document.getElementById("phone").value.trim();
+        var phoneError = document.getElementById("phoneError");
+
+        // Ràng buộc số điện thoại: bắt đầu bằng số 0, tiếp theo là 3, 5, 7, 8 hoặc 9, tổng cộng đúng 10 chữ số
+        var phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+
+        if (!phoneRegex.test(phone)) {
+            phoneError.innerText = "Số điện thoại không hợp lệ!";
+            phoneError.style.display = "block";
+            document.getElementById("phone").focus();
+            return false;
+        } else {
+            phoneError.style.display = "none";
+
+            // Lấy text lựa chọn hành chính
+            var provinceText = citis.options[citis.options.selectedIndex].text;
+            var districtText = districts.options[districts.options.selectedIndex].text;
+            var wardText = wards.options[wards.options.selectedIndex].text;
+            var specific = document.getElementById("specificAddress").value.trim();
+
+            // Gộp chuỗi địa chỉ
+            var fullAddr = "";
+            if (specific !== "") {
+                fullAddr += specific + ", ";
+            }
+            fullAddr += wardText + ", " + districtText + ", " + provinceText;
+
+            document.getElementById("fullAddress").value = fullAddr;
+            return true;
+        }
+    }
+</script>
 </body>
 </html>

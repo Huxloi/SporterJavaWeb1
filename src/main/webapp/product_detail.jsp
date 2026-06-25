@@ -188,26 +188,8 @@
                 </div>
             </c:if>
 
-            <div class="mb-5">
-                <c:choose>
-                    <c:when test="${sessionScope.acc != null}">
-                        <form action="product_detail" method="POST" class="p-4 border rounded bg-light">
-                            <input type="hidden" name="product_id" value="${product.id}">
-                            <input type="hidden" name="submit_comment" value="1">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Viết bình luận của bạn:</label>
-                                <textarea name="comment_text" rows="3" class="form-control shadow-sm" placeholder="Chia sẻ cảm nghĩ về sản phẩm này tại đây..." required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary fw-bold btn-sm px-4">Gửi nhận xét</button>
-                        </form>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="alert alert-warning border-dashed text-center">
-                            <i class="fa-solid fa-lock me-2"></i>Bạn phải <a href="login" class="fw-bold text-decoration-none">Đăng nhập</a> để gửi bình luận.
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+
+
 
             <div class="comment-list">
                 <c:choose>

@@ -1,5 +1,6 @@
 package controller;
 
+import dao.CommentDAO;
 import dao.ProductDAO;
 import dao.CategoryDAO;
 import model.Product;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "ProductsServlet", urlPatterns = {"/products"})
 public class ProductsServlet extends HttpServlet {
